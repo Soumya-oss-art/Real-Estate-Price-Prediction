@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bangalore Home Price Prediction</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+      width: 400px;
+      text-align: center;
+    }
+    h2 {
+      color: #2d89ef;
+      margin-bottom: 20px;
+    }
+    select, input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #2d89ef;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1d5dcf;
+    }
+    #result {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Bangalore Home Price Predictor 🏡</h2>
+
+    <label>Total Sqft:</label>
+    <input type="number" id="sqft" placeholder="Enter area in sqft" />
+
+    <label>BHK:</label>
+    <input type="number" id="bhk" placeholder="Enter number of BHK" />
+
+    <label>Bathrooms:</label>
+    <input type="number" id="bath" placeholder="Enter number of bathrooms" />
+
+    <label>Location:</label>
+    <select id="location"></select>
+
+    <button onclick="onClickedEstimatePrice()">Estimate Price</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const baseUrl = "http://127.0.0.1:5000";
+
+    async function onPageLoad() {
+      console.log("Document loaded");
+      const response = await fetch(`${baseUrl}/get_location_names`);
+      const data = await response.json();
+
+      const locations = data.locations;
+      const locationSelect = document.getElementById("location");
+      locationSelect.innerHTML = "";
+
+      for (let loc of locations) {
+        const opt = new Option(loc, loc);
+        locationSelect.appendChild(opt);
+      }
+    }
+
+    async function onClickedEstimatePrice() {
+      const sqft = document.getElementById("sqft").value;
+      const bhk = document.getElementById("bhk").value;
+      const bath = document.getElementById("bath").value;
+      const location = document.getElementById("location").value;
+
+      if (!sqft || !bhk || !bath || !location) {
+        alert("Please fill all fields!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("total_sqft", sqft);
+      formData.append("bhk", bhk);
+      formData.append("bath", bath);
+      formData.append("location", location);
+
+      try {
+        const response = await fetch(`${baseUrl}/predict_home_price`, {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+        document.getElementById("result").innerText =
+          "Estimated Price: ₹ " + data.estimated_price.toFixed(2) + " Lakhs";
+      } catch (error) {
+        console.error("Error:", error);
+        document.getElementById("result").innerText =
+          "Error predicting price. Make sure Flask server is running.";
+      }
+    }
+
+    window.onload = onPageLoad;
+  </script>
+</body>
+</html>
