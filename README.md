@@ -22,3 +22,16 @@ This project demonstrates how data analysis and machine learning can be leverage
 * bath – number of bathrooms
 * price – target variable (in INR)
 * Dataset source: Collected from online real estate portals (or Kaggle dataset if applicable).
+
+# Model
+
+* Algorithm: Random Forest Regressor (can be replaced with Linear Regression, XGBoost, etc.)
+* Features: Location, Size, BHK, Bathroom, etc.
+## Performance:
+* Mean Absolute Error (MAE): example: ₹35,000
+* R² Score: example: 0.92
+
+# Future Enhancements
+* Incorporate more features like floor number, year built, and amenities.
+* Expand predictions to other cities in India.
+* Deploy as a web app or mobile application for real-time predictions.
